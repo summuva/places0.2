@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import '../models/place_model.dart';
 import '../models/tag_model.dart';
+import '../providers/map_provider.dart';
 
 class CreatePlaceDialog extends StatefulWidget {
   final LatLng position;
@@ -27,7 +29,6 @@ class _CreatePlaceDialogState extends State<CreatePlaceDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final Set<Tag> _selectedTags = {};
-
   @override
   void dispose() {
     _nameController.dispose();
@@ -46,7 +47,11 @@ class _CreatePlaceDialogState extends State<CreatePlaceDialog> {
       Navigator.of(context).pop(place);
     }
   }
-
+  void _cancel() {
+    Navigator.of(context).pop();
+    context.read<MapProvider>().cancelAddingPlace();
+    
+  }
   void _toggleTag(TagCategory category) {
     setState(() {
       final existing = _selectedTags.where((t) => t.category == category);
@@ -202,7 +207,7 @@ class _CreatePlaceDialogState extends State<CreatePlaceDialog> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => _cancel(),
                     child: const Text('Cancelar'),
                   ),
                 ),

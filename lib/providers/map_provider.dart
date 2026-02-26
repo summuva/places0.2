@@ -73,4 +73,11 @@ class MapProvider extends ChangeNotifier {
     _places.removeWhere((p) => p.id == id);
     notifyListeners();
   }
+  void cancelAddingPlace() {
+    _selectedPosition = null;
+    toggleCreationMode();
+    notifyListeners();
+  
+  }
+
 }
