@@ -20,7 +20,7 @@ class MapProvider extends ChangeNotifier {
   bool get isCreating => _isCreating;
   LatLng? get selectedPosition => _selectedPosition;
 
-  // ... existing getUserLocation code ...
+
   Future<void> getUserLocation({
     required MapController mapController,
     required TickerProvider vsync,
