@@ -3,23 +3,21 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../services/location_service.dart';
 import '../utils/map_animator.dart';
+import '../models/place_model.dart';
 
 class MapProvider extends ChangeNotifier {
-  final MapController mapController = MapController();
-  
-  LatLng _currentPosition = const LatLng(-25.2637, -57.5759); // Default Asunción
+  LatLng _currentPosition = const LatLng(-25.2637, -57.5759);
   bool _isLoading = false;
-  
-  // New state for creating places
   bool _isCreating = false;
   LatLng? _selectedPosition;
+  final List<Place> _places = [];
 
   // Getters
   LatLng get currentPosition => _currentPosition;
   bool get isLoading => _isLoading;
   bool get isCreating => _isCreating;
   LatLng? get selectedPosition => _selectedPosition;
-
+  List<Place> get places => List.unmodifiable(_places);
 
   Future<void> getUserLocation({
     required MapController mapController,
@@ -34,14 +32,9 @@ class MapProvider extends ChangeNotifier {
       if (position != null) {
         final newPosition = LatLng(position.latitude, position.longitude);
         _currentPosition = newPosition;
-        
+
         if (animate) {
-          MapAnimator.animatedMove(
-            mapController,
-            vsync,
-            newPosition,
-            16.0,
-          );
+          MapAnimator.animatedMove(mapController, vsync, newPosition, 16.0);
         } else {
           mapController.move(newPosition, 16.0);
         }
@@ -54,10 +47,8 @@ class MapProvider extends ChangeNotifier {
     }
   }
 
-  // New Methods
   void toggleCreationMode() {
     _isCreating = !_isCreating;
-    // If turning off, clear the selected position
     if (!_isCreating) {
       _selectedPosition = null;
     }
@@ -69,5 +60,17 @@ class MapProvider extends ChangeNotifier {
       _selectedPosition = position;
       notifyListeners();
     }
+  }
+
+  void addPlace(Place place) {
+    _places.add(place);
+    _selectedPosition = null;
+    _isCreating = false;
+    notifyListeners();
+  }
+
+  void removePlace(String id) {
+    _places.removeWhere((p) => p.id == id);
+    notifyListeners();
   }
 }

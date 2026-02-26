@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
 import '../providers/map_provider.dart';
+import 'create_place_dialog.dart';
 
 class MapButtons extends StatelessWidget {
   final MapController mapController;
@@ -69,16 +70,22 @@ class _CreatePlaceButton extends StatelessWidget {
       backgroundColor: mapProv.isCreating
           ? (mapProv.selectedPosition != null ? Colors.green : Colors.grey)
           : Theme.of(context).primaryColor,
-      onPressed: () {
+      onPressed: () async {
         if (mapProv.isCreating && mapProv.selectedPosition != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Lugar seleccionado en: ${mapProv.selectedPosition!.latitude}, ${mapProv.selectedPosition!.longitude}',
-              ),
-            ),
+          // Mostrar modal
+          final place = await CreatePlaceDialog.show(
+            context,
+            mapProv.selectedPosition!,
           );
-          mapProv.toggleCreationMode();
+
+          if (place != null) {
+            mapProv.addPlace(place);
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('✅ "${place.name}" guardado')),
+              );
+            }
+          }
         } else {
           mapProv.toggleCreationMode();
         }
