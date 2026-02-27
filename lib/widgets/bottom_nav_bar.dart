@@ -26,7 +26,7 @@ class BottomNavBar extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.search),
-          label: 'Buscar',
+          label: 'Explorar',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.bookmark_outline),

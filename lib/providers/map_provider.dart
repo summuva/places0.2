@@ -43,8 +43,7 @@ class MapProvider extends ChangeNotifier {
       debugPrint('Error obtaining location: $e');
     } finally {
       _isLoading = false;
-      notifyListeners();
-    }
+      notifyListeners();å
   }
 
   void toggleCreationMode() {

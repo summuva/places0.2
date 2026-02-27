@@ -8,7 +8,7 @@ class InstructionBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 10,
+      top: 60,
       left: 0,
       right: 0,
       child: Center(

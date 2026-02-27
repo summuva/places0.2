@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../providers/map_provider.dart';
+import 'markers/location_marker.dart';
+import 'markers/place_marker.dart';
+import 'markers/selection_marker.dart';
 
 class MapLayers extends StatelessWidget {
   final MapProvider mapProv;
@@ -12,39 +15,35 @@ class MapLayers extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Tile layer
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.example.places2',
         ),
 
-        // Ubicación actual (azul)
+        // Ubicación actual
         MarkerLayer(
           markers: [
             Marker(
               point: mapProv.currentPosition,
-              width: 40,
-              height: 40,
-              child: const Icon(Icons.my_location, color: Colors.blue, size: 40),
+              width: 60,
+              height: 60,
+              child: const LocationMarker(),
             ),
           ],
         ),
 
-        // Lugares guardados (verdes) usando lat/lng del modelo
+        // Lugares guardados
         MarkerLayer(
           markers: mapProv.places.map((place) => Marker(
             point: LatLng(place.lat, place.lng),
-            width: 40,
-            height: 40,
+            width: 50,
+            height: 50,
             alignment: Alignment.topCenter,
-            child: Tooltip(
-              message: place.name,
-              child: const Icon(Icons.location_on, color: Colors.green, size: 40),
-            ),
+            child: PlaceMarker(place: place),
           )).toList(),
         ),
 
-        // Marcador temporal de selección (naranja)
+        // Marcador temporal
         if (mapProv.isCreating && mapProv.selectedPosition != null)
           MarkerLayer(
             markers: [
@@ -53,11 +52,7 @@ class MapLayers extends StatelessWidget {
                 width: 50,
                 height: 50,
                 alignment: Alignment.topCenter,
-                child: const Icon(
-                  Icons.location_on,
-                  color: Colors.orange,
-                  size: 50,
-                ),
+                child: const SelectionMarker(),
               ),
             ],
           ),

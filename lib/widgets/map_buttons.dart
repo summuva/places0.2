@@ -21,6 +21,7 @@ class MapButtons extends StatelessWidget {
         _LocationButton(mapController: mapController, vsync: vsync, mapProv: mapProv),
         const SizedBox(height: 10),
         _CreatePlaceButton(mapProv: mapProv),
+        const SizedBox(height: 10),
         _MapTypeButton(mapController: mapController, vsync: vsync, mapProv: mapProv),
       ],
     );

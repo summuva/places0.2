@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
 import '../providers/map_provider.dart';
+import '../models/tag_model.dart';
 import '../widgets/map_buttons.dart';
 import '../widgets/map_layers.dart';
 import '../widgets/instruction_banner.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/tag_carousel.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -17,6 +19,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   final MapController _mapController = MapController();
   int _selectedIndex = 0;
+  final Set<TagCategory> _selectedCategories = {};
 
   @override
   void initState() {
@@ -54,26 +57,45 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
             ],
           ),
 
-          // Título sobre el mapa
+          // Título + Carrusel de tags
           Positioned(
-            top: MediaQuery.of(context).padding.top, 
+            top: MediaQuery.of(context).padding.top,
             left: 0,
             right: 0,
-            child: Center(
-              child: Text(
-                mapProv.isCreating ? 'Toca el mapa para marcar' : 'Places',
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: mapProv.isCreating ? Colors.green.shade800 : Colors.black87,
-                  shadows: const [
-                    Shadow(
-                      color: Colors.white,
-                      blurRadius: 30,
-                    ),
-                  ],
+            child: Column(
+              children: [
+                // Título
+                Text(
+                  mapProv.isCreating ? '' : 'Places',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: mapProv.isCreating ? Colors.green.shade800 : Colors.black87,
+                    shadows: const [
+                      Shadow(
+                        color: Colors.white,
+                        blurRadius: 30,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 8),
+
+                // Carrusel de tags
+                if (!mapProv.isCreating)
+                  TagCarousel(
+                    selectedCategories: _selectedCategories,
+                    onCategoryToggled: (category) {
+                      setState(() {
+                        if (_selectedCategories.contains(category)) {
+                          _selectedCategories.remove(category);
+                        } else {
+                          _selectedCategories.add(category);
+                        }
+                      });
+                    },
+                  ),
+              ],
             ),
           ),
 
