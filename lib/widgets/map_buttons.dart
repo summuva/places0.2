@@ -21,8 +21,11 @@ class MapButtons extends StatelessWidget {
         _LocationButton(mapController: mapController, vsync: vsync, mapProv: mapProv),
         const SizedBox(height: 10),
         _CreatePlaceButton(mapProv: mapProv),
+        _MapTypeButton(mapController: mapController, vsync: vsync, mapProv: mapProv),
       ],
     );
+
+    
   }
 }
 
@@ -102,6 +105,57 @@ class _CreatePlaceButton extends StatelessWidget {
               color: Colors.black,
 
       ),
+    );
+  }
+}
+
+
+
+class _MapTypeButton extends StatelessWidget {
+  final MapController mapController;
+  final TickerProvider vsync;
+  final MapProvider mapProv;
+
+  const _MapTypeButton({
+    required this.mapController,
+    required this.vsync,
+    required this.mapProv,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      heroTag: 'location_btn',
+      shape: const CircleBorder(),
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black87,
+      child: const Icon(IconData(0xe086, fontFamily: 'MaterialIcons')),
+      onPressed: () => {
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (BuildContext context) {
+              return Container(
+                height: 200,
+                color: Colors.amber,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      const Text('Modal BottomSheet'),
+                      ElevatedButton(
+                        child: const Text('Close BottomSheet'),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        },  
+        
+      
     );
   }
 }

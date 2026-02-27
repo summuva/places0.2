@@ -5,6 +5,7 @@ import '../providers/map_provider.dart';
 import '../widgets/map_buttons.dart';
 import '../widgets/map_layers.dart';
 import '../widgets/instruction_banner.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -85,37 +86,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         mapController: _mapController,
         vsync: this,
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: BottomNavBar(
         currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() => _selectedIndex = index);
-        },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black87,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Mapa',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Buscar',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark_outline),
-            label: 'Guardados',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'Eventos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Perfil',
-          ),
-        ],
+        onTap: (index) => setState(() => _selectedIndex = index),
       ),
     );
   }
