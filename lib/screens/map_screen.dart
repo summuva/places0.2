@@ -15,6 +15,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   final MapController _mapController = MapController();
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -33,12 +34,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     final mapProv = context.watch<MapProvider>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(mapProv.isCreating ? 'Toca el mapa para marcar' : 'Places'),
-        backgroundColor: mapProv.isCreating ? Colors.green.shade100 : null,
-      ),
       body: Stack(
         children: [
+          // Mapa ocupa toda la pantalla
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
@@ -54,6 +52,31 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
               MapLayers(mapProv: mapProv),
             ],
           ),
+
+          // Título sobre el mapa
+          Positioned(
+            top: MediaQuery.of(context).padding.top, 
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                mapProv.isCreating ? 'Toca el mapa para marcar' : 'Places',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: mapProv.isCreating ? Colors.green.shade800 : Colors.black87,
+                  shadows: const [
+                    Shadow(
+                      color: Colors.white,
+                      blurRadius: 30,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Banner de instrucciones
           if (mapProv.isCreating)
             InstructionBanner(hasSelection: mapProv.selectedPosition != null),
         ],
@@ -61,6 +84,38 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       floatingActionButton: MapButtons(
         mapController: _mapController,
         vsync: this,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() => _selectedIndex = index);
+        },
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.black87,
+        unselectedItemColor: Colors.grey,
+        backgroundColor: Colors.white,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Mapa',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Buscar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bookmark_outline),
+            label: 'Guardados',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            label: 'Eventos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Perfil',
+          ),
+        ],
       ),
     );
   }

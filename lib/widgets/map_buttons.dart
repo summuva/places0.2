@@ -41,6 +41,9 @@ class _LocationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       heroTag: 'location_btn',
+      shape: const CircleBorder(),
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black87,
       onPressed: mapProv.isLoading
           ? null
           : () => mapProv.getUserLocation(
@@ -67,9 +70,10 @@ class _CreatePlaceButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       heroTag: 'create_btn',
+      shape: const CircleBorder(),
       backgroundColor: mapProv.isCreating
           ? (mapProv.selectedPosition != null ? Colors.green : Colors.grey)
-          : Theme.of(context).primaryColor,
+          : Colors.white,
       onPressed: () async {
         if (mapProv.isCreating && mapProv.selectedPosition != null) {
           // Mostrar modal
@@ -93,7 +97,10 @@ class _CreatePlaceButton extends StatelessWidget {
       child: Icon(
         mapProv.isCreating
             ? (mapProv.selectedPosition != null ? Icons.check : Icons.close)
-            : Icons.add_location_alt,
+            // cambiar el color del icono de locacion a blanco
+              : Icons.add_location_alt,
+              color: Colors.black,
+
       ),
     );
   }
