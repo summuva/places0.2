@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/map_screen.dart';
+import 'screens/main_shell.dart';
 import 'package:provider/provider.dart';
 import 'providers/map_provider.dart';
-// lib/main.dart
+
 void main() {
   runApp(
     MultiProvider(
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MapScreen(),
+      home: const MainShell(),
     );
   }
 }

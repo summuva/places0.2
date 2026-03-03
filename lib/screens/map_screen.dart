@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../providers/map_provider.dart';
-import '../models/tag_model.dart';
+import '../models/place_model.dart';
+import '../utils/map_animator.dart';
 import '../widgets/map_buttons.dart';
 import '../widgets/map_layers.dart';
 import '../widgets/instruction_banner.dart';
-import '../widgets/bottom_nav_bar.dart';
 import '../widgets/tag_carousel.dart';
+import '../widgets/place_detail_sheet.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -18,8 +20,6 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   final MapController _mapController = MapController();
-  int _selectedIndex = 0;
-  final Set<TagCategory> _selectedCategories = {};
 
   @override
   void initState() {
@@ -33,85 +33,86 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     });
   }
 
+  void _onPlaceTap(Place place) {
+    MapAnimator.animatedMove(
+      _mapController,
+      this,
+      LatLng(place.lat, place.lng),
+      16.0,
+    );
+    PlaceDetailSheet.show(context, place);
+  }
+
   @override
   Widget build(BuildContext context) {
     final mapProv = context.watch<MapProvider>();
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Mapa ocupa toda la pantalla
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: mapProv.currentPosition,
-              initialZoom: 13.0,
-              onTap: (_, point) {
-                if (mapProv.isCreating) {
-                  mapProv.selectPosition(point);
-                }
-              },
+    return Stack(
+      children: [
+        // Mapa
+        FlutterMap(
+          mapController: _mapController,
+          options: MapOptions(
+            initialCenter: mapProv.currentPosition,
+            initialZoom: 13.0,
+            onTap: (_, point) {
+              if (mapProv.isCreating) {
+                mapProv.selectPosition(point);
+              }
+            },
+          ),
+          children: [
+            MapLayers(
+              mapProv: mapProv,
+              onPlaceTap: _onPlaceTap,
             ),
+          ],
+        ),
+
+        // Título + Carrusel
+        Positioned(
+          top: MediaQuery.of(context).padding.top,
+          left: 0,
+          right: 0,
+          child: Column(
             children: [
-              MapLayers(mapProv: mapProv),
+              Text(
+                mapProv.isCreating ? '' : 'Places',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: mapProv.isCreating ? Colors.green.shade800 : Colors.black87,
+                  shadows: const [
+                    Shadow(color: Colors.white, blurRadius: 30),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (!mapProv.isCreating)
+                TagCarousel(
+                  selectedCategories: mapProv.activeFilters,
+                  onCategoryToggled: (category) {
+                    mapProv.toggleFilter(category);
+                  },
+                ),
             ],
           ),
+        ),
 
-          // Título + Carrusel de tags
-          Positioned(
-            top: MediaQuery.of(context).padding.top,
-            left: 0,
-            right: 0,
-            child: Column(
-              children: [
-                // Título
-                Text(
-                  mapProv.isCreating ? '' : 'Places',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: mapProv.isCreating ? Colors.green.shade800 : Colors.black87,
-                    shadows: const [
-                      Shadow(
-                        color: Colors.white,
-                        blurRadius: 30,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
+        // Banner de instrucciones
+        if (mapProv.isCreating)
+          InstructionBanner(hasSelection: mapProv.selectedPosition != null),
 
-                // Carrusel de tags
-                if (!mapProv.isCreating)
-                  TagCarousel(
-                    selectedCategories: _selectedCategories,
-                    onCategoryToggled: (category) {
-                      setState(() {
-                        if (_selectedCategories.contains(category)) {
-                          _selectedCategories.remove(category);
-                        } else {
-                          _selectedCategories.add(category);
-                        }
-                      });
-                    },
-                  ),
-              ],
-            ),
+        // FAB
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: MapButtons(
+            mapController: _mapController,
+            vsync: this,
           ),
-
-          // Banner de instrucciones
-          if (mapProv.isCreating)
-            InstructionBanner(hasSelection: mapProv.selectedPosition != null),
-        ],
-      ),
-      floatingActionButton: MapButtons(
-        mapController: _mapController,
-        vsync: this,
-      ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-      ),
+        ),
+      ],
     );
   }
 }

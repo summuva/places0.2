@@ -34,7 +34,7 @@ class BottomNavBar extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.event),
-          label: 'Eventos',
+          label: 'Publicaciones',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person_outline),

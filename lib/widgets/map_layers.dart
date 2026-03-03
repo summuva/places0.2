@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../providers/map_provider.dart';
+import '../models/place_model.dart';
 import 'markers/location_marker.dart';
 import 'markers/place_marker.dart';
 import 'markers/selection_marker.dart';
 
 class MapLayers extends StatelessWidget {
   final MapProvider mapProv;
+  final void Function(Place place)? onPlaceTap;
 
-  const MapLayers({super.key, required this.mapProv});
+  const MapLayers({super.key, required this.mapProv, this.onPlaceTap});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,6 @@ class MapLayers extends StatelessWidget {
           userAgentPackageName: 'com.example.places2',
         ),
 
-        // Ubicación actual
         MarkerLayer(
           markers: [
             Marker(
@@ -32,18 +33,19 @@ class MapLayers extends StatelessWidget {
           ],
         ),
 
-        // Lugares guardados
         MarkerLayer(
-          markers: mapProv.places.map((place) => Marker(
+          markers: mapProv.filteredPlaces.map((place) => Marker(
             point: LatLng(place.lat, place.lng),
             width: 50,
             height: 50,
             alignment: Alignment.topCenter,
-            child: PlaceMarker(place: place),
+            child: PlaceMarker(
+              place: place,
+              onTap: () => onPlaceTap?.call(place),
+            ),
           )).toList(),
         ),
 
-        // Marcador temporal
         if (mapProv.isCreating && mapProv.selectedPosition != null)
           MarkerLayer(
             markers: [

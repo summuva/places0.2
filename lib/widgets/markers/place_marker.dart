@@ -4,15 +4,16 @@ import '../../utils/tag_helpers.dart';
 
 class PlaceMarker extends StatelessWidget {
   final Place place;
+  final VoidCallback? onTap;
 
-  const PlaceMarker({super.key, required this.place});
+  const PlaceMarker({super.key, required this.place, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final emoji = TagHelpers.emojiForPlace(place.tags);
 
-    return Tooltip(
-      message: place.name,
+    return GestureDetector(
+      onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -71,7 +72,11 @@ class _TagBadge extends StatelessWidget {
       child: Center(
         child: Text(
           '$count',
-          style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 9,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -87,7 +92,9 @@ class _ArrowPainter extends CustomPainter {
       ..lineTo(size.width, 0)
       ..close();
 
-    canvas.drawPath(path, Paint()..color = Colors.black.withOpacity(0.15)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2));
+    canvas.drawPath(path, Paint()
+      ..color = Colors.black.withOpacity(0.15)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2));
     canvas.drawPath(path, Paint()..color = Colors.white);
   }
 

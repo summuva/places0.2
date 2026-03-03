@@ -6,6 +6,7 @@ class Place {
   final double lat;
   final double lng;
   final Set<Tag> tags;
+  final String? photoPath;
 
   Place({
     required this.id,
@@ -13,5 +14,6 @@ class Place {
     required this.lat,
     required this.lng,
     required this.tags,
+    this.photoPath,
   });
 }

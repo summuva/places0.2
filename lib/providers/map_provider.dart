@@ -4,13 +4,14 @@ import 'package:latlong2/latlong.dart';
 import '../services/location_service.dart';
 import '../utils/map_animator.dart';
 import '../models/place_model.dart';
-
+import '../models/tag_model.dart';
 class MapProvider extends ChangeNotifier {
   LatLng _currentPosition = const LatLng(-25.2637, -57.5759);
   bool _isLoading = false;
   bool _isCreating = false;
   LatLng? _selectedPosition;
   final List<Place> _places = [];
+  final Set<TagCategory> _activeFilters = {};
 
   // Getters
   LatLng get currentPosition => _currentPosition;
@@ -18,6 +19,27 @@ class MapProvider extends ChangeNotifier {
   bool get isCreating => _isCreating;
   LatLng? get selectedPosition => _selectedPosition;
   List<Place> get places => List.unmodifiable(_places);
+  Set<TagCategory> get activeFilters => Set.unmodifiable(_activeFilters);
+
+ List<Place> get filteredPlaces {
+    if (_activeFilters.isEmpty) return List.unmodifiable(_places);
+    return _places.where((place) {
+      return place.tags.any((tag) => _activeFilters.contains(tag.category));
+    }).toList();
+  }
+
+  void toggleFilter(TagCategory category) {
+    if (_activeFilters.contains(category)) {
+      _activeFilters.remove(category);
+    } else {
+      _activeFilters.add(category);
+    }
+    notifyListeners();
+  }
+    void clearFilters() {
+    _activeFilters.clear();
+    notifyListeners();
+  }
 
   Future<void> getUserLocation({
     required MapController mapController,
@@ -43,7 +65,8 @@ class MapProvider extends ChangeNotifier {
       debugPrint('Error obtaining location: $e');
     } finally {
       _isLoading = false;
-      notifyListeners();å
+      notifyListeners();
+    }
   }
 
   void toggleCreationMode() {
